@@ -54,6 +54,16 @@ Array of nicknames in our server.
 nickNames = [ theProphet, "Carrigan", "RIOT MARTINJSTN1", "Jackson", "grand maester simpson", "Joe W", "Chris L", "Joseph" ]
 
 
+"""
+Array of commands that take NO paramaters
+"""
+basicCommands = [ "f!help", "f!hello" ]
+
+"""
+Array of commands that take paramaters
+"""
+advCommands = ["f!penissize"]
+
 ####
 #   Some notes:
 #   for a message object, when referring to the user who sent the message
@@ -82,17 +92,20 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
     elif message.content.startswith('f!penissize'):
-        await detectParamater(message)
-        size = await getPenisSize(message)
-        msg = '%s penis size is about %d inches short' %(message.author.nick ,size)
+        if await detectParamater(message):
+            paramaterName = await parseMessageParamaterName(message)
+            size = await getPenisSize(message)
+            msg = '%s penis size is about %d inches short!' %(paramaterName + "'s", size)
+        else:
+            size = await getPenisSize(message)
+            msg = '%s penis size is about %d inches short!' %(message.author.nick + "'s" ,size)
         await client.send_message(message.channel, msg)
 
-    else:
-        await client.send_message(message.channel, sys_error(1))
+    #else:
+        #await client.send_message(message.channel, await sys_error(1))
 
 #return a penis size int. 
 async def getPenisSize(m):
-    print(m.content)
     if m.channel.is_private:
         if m.user.display_name == theProphet:
             return 1000000000
@@ -109,23 +122,29 @@ async def getPenisSize(m):
 #returns the first paramater with delimeters '<' '>'
 async def detectParamater(message):
     found = False
+    found2 =False
     spot = 0
     for i in range(len(message.content)):
         if message.content[i] == '<':
             spot = i
             found = True
             break      #TODO, ERROR CHECK NO PARAMS.
-    if found:
-        originalParamaterName = await parseMessageParamaterName(i, message)
+
+    for spot in range(len(message.content)):
+        if message.content[spot] == '>':
+            found2 = True;
+            break;
+        
+    if found and found2:
+        return True #meaning we have the proper format for params like <text>
     else:
-        return -1
+        return False
 
-#this returns a string of paramter name passed in by < and > delimiters
-async def parseMessageParamaterName(index, message): #TODO, errorcheck no >
-    cont = True
-    name = ""
-    #TODO parse up until > then return
-
+#this returns a string of paramter name passed in by user with < and > delimiters
+async def parseMessageParamaterName(message):
+    firstPart = message.content.split('<') #this means index 1 will hold the value "mytext>"
+    actualParam = firstPart[1].split('>')
+    return actualParam[0] 
 
 async def sys_error(num):
     if num == 1:
