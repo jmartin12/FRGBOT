@@ -109,11 +109,11 @@ async def on_message(message):
                 List of available commands: \n
                  f!help
                  f!hello
-                 f!penissize <name> (BRACKETS INCLUDED)
+                 f!size <name> (BRACKETS INCLUDED)
                 """.format(message)
         await client.send_message(message.channel, msg)
 
-    elif message.content.startswith('f!penissize'):
+    elif message.content.startswith('f!size'):
         paramType = await detectParamater(message)
         if paramType==2:
             tempName = await scanIDs(message)
@@ -123,22 +123,22 @@ async def on_message(message):
             #if await detectJacob(message):
              #   size = 10000000000
             #else:
-            size = await getPenisSize(message)
-            msg = '%s penis size is about %d inches short!' %(paramaterName + "'s", size)
+            size = await getSize(message)
+            msg = '%s size is about %d inches short!' %(paramaterName + "'s", size)
         elif paramType==1:
             paramaterName = await parseMessageParamaterName(message)
-            size = await getPenisSize(message)
-            msg = '%s penis size is about %d inches short!' %(paramaterName + "'s", size)
+            size = await getSize(message)
+            msg = '%s size is about %d inches short!' %(paramaterName + "'s", size)
         else:
-            size = await getPenisSize(message)
-            msg = '%s penis size is about %d inches short!' %(message.author.nick + "'s" ,size)
+            size = await getSize(message)
+            msg = '%s size is about %d inches short!' %(message.author.nick + "'s" ,size)
         await client.send_message(message.channel, msg)
 
     #else:
         #await client.send_message(message.channel, await sys_error(1))
 
-#return a penis size int. 
-async def getPenisSize(m):
+#return a size int. 
+async def getSize(m):
     return random.randint(1,8)
 """    
 returns an int depending if < or > is detected
